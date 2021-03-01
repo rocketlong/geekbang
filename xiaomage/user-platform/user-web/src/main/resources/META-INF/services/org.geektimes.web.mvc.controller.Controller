@@ -1,1 +1,2 @@
-org.geektimes.web.user.web.controller.HelloWorldController
+org.geektimes.web.user.controller.HelloWorldController
+org.geektimes.web.user.controller.UserController
