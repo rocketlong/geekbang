@@ -34,6 +34,16 @@ public class DBConnectionManager {
         preparedStatementMethodMappings.put(Double.class, "setDouble");
     }
 
+    private static DBConnectionManager instance = null;
+
+    static {
+        instance = new DBConnectionManager();
+    }
+
+    public static DBConnectionManager getInstance() {
+        return instance;
+    }
+
     private DataSource dataSource;
 
     public DBConnectionManager() {
@@ -85,7 +95,7 @@ public class DBConnectionManager {
             if (wrapperType == null) {
                 wrapperType = argType;
             }
-            String methodName = preparedStatementMethodMappings.get(wrapperType);
+            String methodName = preparedStatementMethodMappings.get(argType);
             Method method = PreparedStatement.class.getMethod(methodName, int.class, wrapperType);
             method.invoke(preparedStatement, i + 1, arg);
         }

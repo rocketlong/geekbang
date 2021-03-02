@@ -41,7 +41,7 @@ public class DatabaseUserRepository implements UserRepository {
     private DBConnectionManager dbConnectionManager;
 
     public DatabaseUserRepository() {
-        this.dbConnectionManager = new DBConnectionManager();
+        this.dbConnectionManager = DBConnectionManager.getInstance();
     }
 
     private static final Consumer<Throwable> COMMON_EXCEPTION_HANDLER = e -> logger.log(Level.SEVERE, e.getMessage());
@@ -54,7 +54,9 @@ public class DatabaseUserRepository implements UserRepository {
 
     public static final String SELECT_USER_BY_ID_DML_SQL = "SELECT id,name,password,email,phoneNumber FROM users WHERE id=?";
 
-    public static final String SELECT_USER_BY_CONDITION__DML_SQL = "SELECT id,name,password,email,phoneNumber FROM users WHERE name=? and password=?";
+    public static final String SELECT_USER_BY_CONDITION_DML_SQL = "SELECT id,name,password,email,phoneNumber FROM users WHERE name=? and password=?";
+
+    public static final String SELECT_USER_ALL = "SELECT id,name,password,email,phoneNumber FROM users";
 
     @Override
     public int save(User user) {
@@ -80,12 +82,12 @@ public class DatabaseUserRepository implements UserRepository {
 
     @Override
     public User getByNameAndPassword(String userName, String password) {
-        return dbConnectionManager.executeQuery(SELECT_USER_BY_CONDITION__DML_SQL, this::handlerResultSet, COMMON_EXCEPTION_HANDLER, userName, password);
+        return dbConnectionManager.executeQuery(SELECT_USER_BY_CONDITION_DML_SQL, this::handlerResultSet, COMMON_EXCEPTION_HANDLER, userName, password);
     }
 
     @Override
     public Collection<User> getAll() {
-        return dbConnectionManager.executeQuery(SELECT_USER_BY_CONDITION__DML_SQL, this::handlerResultSetList, COMMON_EXCEPTION_HANDLER);
+        return dbConnectionManager.executeQuery(SELECT_USER_ALL, this::handlerResultSetList, COMMON_EXCEPTION_HANDLER);
     }
 
     private User handlerResultSet(ResultSet resultSet) throws Exception {

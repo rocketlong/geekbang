@@ -18,6 +18,7 @@ import javax.ws.rs.HttpMethod;
 import javax.ws.rs.Path;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -64,8 +65,8 @@ public class FrontControllerServlet extends HttpServlet {
                     if (!pathMethodValue.startsWith("/")) {
                         pathMethodValue = "/" + pathMethodValue;
                     }
-                    requestPath += pathMethodValue;
-                    handleMethodInfoMapping.put(requestPath, new HandlerMethodInfo(requestPath, method, supportedHttpMethods, controller));
+                    String path = requestPath + pathMethodValue;
+                    handleMethodInfoMapping.put(path, new HandlerMethodInfo(path, method, supportedHttpMethods, controller));
                 }
             }
         }
@@ -147,13 +148,14 @@ public class FrontControllerServlet extends HttpServlet {
                 Class<?>[] paramTypes = method.getParameterTypes();
                 Parameter[] parameters = method.getParameters();
                 Object[] objects = new Object[count];
+                Map<String, String[]> parameterMap = req.getParameterMap();
                 for (int i = 0; i < method.getParameterCount(); i++) {
                     String parameter = req.getParameter(parameters[i].getName());
                     if (StringUtils.isBlank(parameter)) {
                         objects[i] = null;
                     } else {
                         Class<?> classType = Class.forName(paramTypes[i].getName());
-                        objects[i] = classType.cast(parameter);
+                        objects[i] = getVal(parameter,classType);
                     }
                 }
                 pathValue = (String) method.invoke(controller, objects);
@@ -174,7 +176,7 @@ public class FrontControllerServlet extends HttpServlet {
                         objects[i] = null;
                     } else {
                         Class<?> classType = Class.forName(paramTypes[i].getName());
-                        objects[i] = classType.cast(parameter);
+                        objects[i] = JSONObject.parseObject(parameter,classType);
                     }
                 }
                 pathValue = (String) method.invoke(controller, objects);
@@ -183,6 +185,18 @@ public class FrontControllerServlet extends HttpServlet {
             }
         }
         return pathValue;
+    }
+
+    public <T> T getVal(String val, Class<T> type) {
+        T value = null;
+        try {
+            Constructor<T> constructor = type.getConstructor(String.class);
+            constructor.setAccessible(true);
+            value = constructor.newInstance(val);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return value;
     }
 
 }
