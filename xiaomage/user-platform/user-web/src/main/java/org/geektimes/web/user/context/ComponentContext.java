@@ -37,7 +37,7 @@ public class ComponentContext {
     public void destroy() {
         if (this.context != null) {
             try {
-                context.close();
+                this.context.close();
             } catch (NamingException e) {
                 throw new RuntimeException(e);
             }
@@ -54,7 +54,7 @@ public class ComponentContext {
     public <C> C getComponent(String name) {
         C component = null;
         try {
-            component = (C) context.lookup(name);
+            component = (C) this.context.lookup(name);
         } catch (NamingException e) {
             throw new NoSuchElementException(name);
         }
