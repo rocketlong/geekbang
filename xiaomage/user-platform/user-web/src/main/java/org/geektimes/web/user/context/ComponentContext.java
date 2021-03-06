@@ -13,6 +13,9 @@ public class ComponentContext {
 
     public static final String CONTEXT_NAME = ComponentContext.class.getName();
 
+    // 注意：
+    // 假设一个 Tomcat JVM 进程，三个 Web Apps，会不会相互冲突？（不会）
+    // static 字段是 JVM 缓存吗？（是 ClassLoader 缓存，属于 AppClassLoader，属于同一级别）
     private static ServletContext servletContext;
 
     private Context context;
