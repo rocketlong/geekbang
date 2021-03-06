@@ -1,21 +1,14 @@
 package org.geektimes.web.user.repository;
 
-import org.apache.commons.lang.ClassUtils;
+import org.geektimes.web.user.context.ComponentContext;
 import org.geektimes.web.user.domain.User;
-import org.geektimes.web.user.function.ThrowableFunction;
-import org.geektimes.web.user.sql.DBConnectionManager;
+import org.geektimes.web.user.repository.sql.DBConnectionManager;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.sql.DataSource;
 import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.logging.Level;
@@ -38,10 +31,10 @@ public class DatabaseUserRepository implements UserRepository {
         resultSetMethodMappings.put(Double.class, "getDouble");
     }
 
-    private DBConnectionManager dbConnectionManager;
+    private final DBConnectionManager dbConnectionManager;
 
     public DatabaseUserRepository() {
-        this.dbConnectionManager = DBConnectionManager.getInstance();
+        this.dbConnectionManager = ComponentContext.getInstance().getComponent("bean/DBConnectionManager");
     }
 
     private static final Consumer<Throwable> COMMON_EXCEPTION_HANDLER = e -> logger.log(Level.SEVERE, e.getMessage());

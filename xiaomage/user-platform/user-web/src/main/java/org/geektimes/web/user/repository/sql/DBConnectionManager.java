@@ -1,10 +1,9 @@
-package org.geektimes.web.user.sql;
+package org.geektimes.web.user.repository.sql;
 
 import org.apache.commons.lang.ClassUtils;
+import org.geektimes.web.user.context.ComponentContext;
 import org.geektimes.web.user.function.ThrowableFunction;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
 import javax.sql.DataSource;
 import java.lang.reflect.Method;
 import java.sql.Connection;
@@ -17,7 +16,7 @@ import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class DBConnectionManager {
+public class DBConnectionManager { // JNDI 组件
 
     private static final Logger logger = Logger.getLogger(DBConnectionManager.class.getName());
 
@@ -34,34 +33,16 @@ public class DBConnectionManager {
         preparedStatementMethodMappings.put(Double.class, "setDouble");
     }
 
-    private static DBConnectionManager instance = null;
-
-    static {
-        instance = new DBConnectionManager();
-    }
-
-    public static DBConnectionManager getInstance() {
-        return instance;
-    }
-
-    private DataSource dataSource;
-
-    public DBConnectionManager() {
-        try {
-            Context initCtx = new InitialContext();
-            this.dataSource = (DataSource) initCtx.lookup("java:comp/env/jdbc/UserPlatformDB");
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage());
-        }
-    }
-
     public Connection getConnection() {
+        ComponentContext context = ComponentContext.getInstance();
+        Connection connection = null;
         try {
-            return dataSource.getConnection();
+            DataSource dataSource = context.getComponent("jdbc/UserPlatformDB");
+            connection = dataSource.getConnection();
         } catch (SQLException e) {
             logger.log(Level.SEVERE, e.getMessage());
         }
-        return null;
+        return connection;
     }
 
     public <T> T executeQuery(String sql, ThrowableFunction<ResultSet, T> function,
@@ -76,7 +57,7 @@ public class DBConnectionManager {
         return null;
     }
 
-    public <T> Integer execute(String sql, Consumer<Throwable> exceptionHandler, Object... args) {
+    public Integer execute(String sql, Consumer<Throwable> exceptionHandler, Object... args) {
         try {
             PreparedStatement preparedStatement = handlerArgs(getConnection(), sql, args);
             return preparedStatement.executeUpdate();
