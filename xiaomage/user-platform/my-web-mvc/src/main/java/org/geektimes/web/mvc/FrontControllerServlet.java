@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.Path;
+import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
@@ -148,7 +149,6 @@ public class FrontControllerServlet extends HttpServlet {
                 Class<?>[] paramTypes = method.getParameterTypes();
                 Parameter[] parameters = method.getParameters();
                 Object[] objects = new Object[count];
-                Map<String, String[]> parameterMap = req.getParameterMap();
                 for (int i = 0; i < method.getParameterCount(); i++) {
                     String parameter = req.getParameter(parameters[i].getName());
                     if (StringUtils.isBlank(parameter)) {
@@ -163,25 +163,47 @@ public class FrontControllerServlet extends HttpServlet {
                 pathValue = (String) method.invoke(controller);
             }
         } else if (httpMethod.equals(HttpMethod.POST)) {
-            String body = req.getReader().lines().collect(Collectors.joining());
-            JSONObject jsonObject = JSONObject.parseObject(body);
-            int count = method.getParameterCount();
-            if (count > 0) {
-                Class<?>[] paramTypes = method.getParameterTypes();
-                Parameter[] parameters = method.getParameters();
-                Object[] objects = new Object[count];
-                for (int i = 0; i < method.getParameterCount(); i++) {
-                    String parameter = jsonObject.getString(parameters[i].getName());
-                    if (StringUtils.isBlank(parameter)) {
-                        objects[i] = null;
-                    } else {
-                        Class<?> classType = Class.forName(paramTypes[i].getName());
-                        objects[i] = JSONObject.parseObject(parameter,classType);
+            String contentType = req.getHeader("Content-type");
+            if (contentType.equals(MediaType.APPLICATION_FORM_URLENCODED)) {
+                int count = method.getParameterCount();
+                if (count > 0) {
+                    Class<?>[] paramTypes = method.getParameterTypes();
+                    Parameter[] parameters = method.getParameters();
+                    Object[] objects = new Object[count];
+                    for (int i = 0; i < method.getParameterCount(); i++) {
+                        String parameter = req.getParameter(parameters[i].getName());
+                        if (StringUtils.isBlank(parameter)) {
+                            objects[i] = null;
+                        } else {
+                            Class<?> classType = Class.forName(paramTypes[i].getName());
+                            objects[i] = getVal(parameter,classType);
+                        }
                     }
+                    pathValue = (String) method.invoke(controller, objects);
+                } else {
+                    pathValue = (String) method.invoke(controller);
                 }
-                pathValue = (String) method.invoke(controller, objects);
-            } else {
-                pathValue = (String) method.invoke(controller);
+            } else if (contentType.equals(MediaType.APPLICATION_JSON)) {
+                String body = req.getReader().lines().collect(Collectors.joining());
+                JSONObject jsonObject = JSONObject.parseObject(body);
+                int count = method.getParameterCount();
+                if (count > 0) {
+                    Class<?>[] paramTypes = method.getParameterTypes();
+                    Parameter[] parameters = method.getParameters();
+                    Object[] objects = new Object[count];
+                    for (int i = 0; i < method.getParameterCount(); i++) {
+                        String parameter = jsonObject.getString(parameters[i].getName());
+                        if (StringUtils.isBlank(parameter)) {
+                            objects[i] = null;
+                        } else {
+                            Class<?> classType = Class.forName(paramTypes[i].getName());
+                            objects[i] = JSONObject.parseObject(parameter,classType);
+                        }
+                    }
+                    pathValue = (String) method.invoke(controller, objects);
+                } else {
+                    pathValue = (String) method.invoke(controller);
+                }
             }
         }
         return pathValue;

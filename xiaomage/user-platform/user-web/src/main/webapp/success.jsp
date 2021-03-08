@@ -4,8 +4,6 @@
 </head>
 <body>
 	<div class="container-lg">
-		Hello,MVC<br/>
-		<a href="login.jsp">登录</a><br/>
-		<a href="register.jsp">注册</a>
+		操作成功
 	</div>
 </body>

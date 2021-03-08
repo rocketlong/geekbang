@@ -24,7 +24,7 @@ public class UserController implements PageController {
     public String getUserById(Long id) {
         User user = userRepository.getById(id);
         System.out.println(user);
-        return "index.jsp";
+        return "success.jsp";
     }
 
     @GET
@@ -32,14 +32,25 @@ public class UserController implements PageController {
     public String getUserAll() {
         List<User> users = (List<User>) userRepository.getAll();
         System.out.println(users);
-        return "index.jsp";
+        return "success.jsp";
     }
 
     @POST
     @Path("/register")
-    public String register(User user) {
+    public String register(String name, String password, String email, String phoneNumber) {
+        User user = new User();
+        user.setName(name);
+        user.setPassword(password);
+        user.setEmail(email);
+        user.setPhoneNumber(phoneNumber);
         userRepository.save(user);
-        return "index.jsp";
+        return "success.jsp";
+    }
+
+    @POST
+    @Path("/login")
+    public String login(String email, String password) {
+        return "success.jsp";
     }
 
 }
