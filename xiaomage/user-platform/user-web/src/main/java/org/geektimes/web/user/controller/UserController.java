@@ -50,6 +50,10 @@ public class UserController implements PageController {
     @POST
     @Path("/login")
     public String login(String email, String password) {
+        User user = userRepository.getByEmail(email);
+        if (user == null || !password.equals(user.getPassword())) {
+            return "error.jsp";
+        }
         return "success.jsp";
     }
 

@@ -4,6 +4,7 @@ import org.geektimes.web.user.context.ComponentContext;
 import org.geektimes.web.user.domain.User;
 import org.geektimes.web.user.repository.sql.DBConnectionManager;
 
+import javax.annotation.Resource;
 import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
@@ -31,7 +32,7 @@ public class DatabaseUserRepository implements UserRepository {
         resultSetMethodMappings.put(Double.class, "getDouble");
     }
 
-    private final DBConnectionManager dbConnectionManager;
+    private DBConnectionManager dbConnectionManager;
 
     public DatabaseUserRepository() {
         this.dbConnectionManager = ComponentContext.getInstance().getComponent("bean/DBConnectionManager");
@@ -48,6 +49,8 @@ public class DatabaseUserRepository implements UserRepository {
     public static final String SELECT_USER_BY_ID_DML_SQL = "SELECT id,name,password,email,phoneNumber FROM users WHERE id=?";
 
     public static final String SELECT_USER_BY_CONDITION_DML_SQL = "SELECT id,name,password,email,phoneNumber FROM users WHERE name=? and password=?";
+
+    public static final String SELECT_USER_BY_EMAIL = "SELECT id,name,password,email,phoneNumber FROM users WHERE email=?";
 
     public static final String SELECT_USER_ALL = "SELECT id,name,password,email,phoneNumber FROM users";
 
@@ -81,6 +84,11 @@ public class DatabaseUserRepository implements UserRepository {
     @Override
     public Collection<User> getAll() {
         return dbConnectionManager.executeQuery(SELECT_USER_ALL, this::handlerResultSetList, COMMON_EXCEPTION_HANDLER);
+    }
+
+    @Override
+    public User getByEmail(String email) {
+        return dbConnectionManager.executeQuery(SELECT_USER_BY_EMAIL, this::handlerResultSet, COMMON_EXCEPTION_HANDLER, email);
     }
 
     private User handlerResultSet(ResultSet resultSet) throws Exception {

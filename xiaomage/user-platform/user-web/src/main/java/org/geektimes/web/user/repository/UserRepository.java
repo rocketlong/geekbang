@@ -18,4 +18,6 @@ public interface UserRepository {
 
     Collection<User> getAll();
 
+    User getByEmail(String email);
+
 }
