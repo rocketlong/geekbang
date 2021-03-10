@@ -1,9 +1,10 @@
 package org.geektimes.web.user.repository.sql;
 
 import org.apache.commons.lang.ClassUtils;
-import org.geektimes.web.user.context.ComponentContext;
-import org.geektimes.web.user.function.ThrowableFunction;
+import org.geektimes.web.mvc.context.ComponentContext;
+import org.geektimes.web.mvc.function.ThrowableFunction;
 
+import javax.annotation.Resource;
 import javax.sql.DataSource;
 import java.lang.reflect.Method;
 import java.sql.Connection;
@@ -33,11 +34,12 @@ public class DBConnectionManager { // JNDI 组件
         preparedStatementMethodMappings.put(Double.class, "setDouble");
     }
 
+    @Resource(name = "jdbc/UserPlatformDB")
+    private DataSource dataSource;
+
     public Connection getConnection() {
-        ComponentContext context = ComponentContext.getInstance();
         Connection connection = null;
         try {
-            DataSource dataSource = context.getComponent("jdbc/UserPlatformDB");
             connection = dataSource.getConnection();
         } catch (SQLException e) {
             logger.log(Level.SEVERE, e.getMessage());

@@ -17,4 +17,6 @@ public interface UserService {
     User getByNameAndPassword(String userName, String password);
 
     Collection<User> getAll();
+
+    User getByEmail(String email);
 }

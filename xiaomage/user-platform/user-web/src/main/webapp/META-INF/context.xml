@@ -13,4 +13,13 @@
 	<Resource name="bean/DBConnectionManager" auth="Container"
 			  type="org.geektimes.web.user.repository.sql.DBConnectionManager"
 			  factory="org.apache.naming.factory.BeanFactory" />
+
+	<Resource name="bean/DatabaseUserRepository" auth="Container"
+			  type="org.geektimes.web.user.repository.DatabaseUserRepository"
+			  factory="org.apache.naming.factory.BeanFactory" />
+
+	<Resource name="bean/UserServiceImpl" auth="Container"
+			  type="org.geektimes.web.user.service.UserServiceImpl"
+			  factory="org.apache.naming.factory.BeanFactory" />
+
 </Context>

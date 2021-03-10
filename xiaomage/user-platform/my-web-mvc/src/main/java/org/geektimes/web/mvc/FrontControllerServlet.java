@@ -2,11 +2,13 @@ package org.geektimes.web.mvc;
 
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang.StringUtils;
+import org.geektimes.web.mvc.context.ComponentContext;
 import org.geektimes.web.mvc.controller.Controller;
 import org.geektimes.web.mvc.controller.PageController;
 import org.geektimes.web.mvc.controller.RestController;
 import sun.misc.IOUtils;
 
+import javax.annotation.Resource;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -19,12 +21,10 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
+import java.lang.reflect.*;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class FrontControllerServlet extends HttpServlet {
 
@@ -57,6 +57,20 @@ public class FrontControllerServlet extends HttpServlet {
             if (!requestPath.startsWith("/")) {
                 requestPath = "/" + requestPath;
             }
+            Stream.of(controllersClass.getDeclaredFields())
+                    .filter(field -> !Modifier.isStatic(field.getModifiers()) &&
+                            field.isAnnotationPresent(Resource.class))
+                    .forEach(field -> {
+                        Resource resource = field.getAnnotation(Resource.class);
+                        String resourceName = resource.name();
+                        Object injectObject = ComponentContext.getComponent(resourceName);
+                        field.setAccessible(true);
+                        try {
+                            field.set(controller, injectObject);
+                        } catch (IllegalAccessException e) {
+                            e.printStackTrace();
+                        }
+                    });
             Method[] publicMethods = controllersClass.getDeclaredMethods();
             for (Method method : publicMethods) {
                 Set<String> supportedHttpMethods = findSupportedHttpMethods(method);
@@ -155,7 +169,7 @@ public class FrontControllerServlet extends HttpServlet {
                         objects[i] = null;
                     } else {
                         Class<?> classType = Class.forName(paramTypes[i].getName());
-                        objects[i] = getVal(parameter,classType);
+                        objects[i] = getVal(parameter, classType);
                     }
                 }
                 pathValue = (String) method.invoke(controller, objects);
@@ -176,7 +190,7 @@ public class FrontControllerServlet extends HttpServlet {
                             objects[i] = null;
                         } else {
                             Class<?> classType = Class.forName(paramTypes[i].getName());
-                            objects[i] = getVal(parameter,classType);
+                            objects[i] = getVal(parameter, classType);
                         }
                     }
                     pathValue = (String) method.invoke(controller, objects);
@@ -197,7 +211,7 @@ public class FrontControllerServlet extends HttpServlet {
                             objects[i] = null;
                         } else {
                             Class<?> classType = Class.forName(paramTypes[i].getName());
-                            objects[i] = JSONObject.parseObject(parameter,classType);
+                            objects[i] = JSONObject.parseObject(parameter, classType);
                         }
                     }
                     pathValue = (String) method.invoke(controller, objects);

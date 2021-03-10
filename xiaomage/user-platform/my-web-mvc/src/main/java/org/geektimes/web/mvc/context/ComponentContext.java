@@ -1,14 +1,13 @@
-package org.geektimes.web.user.context;
+package org.geektimes.web.mvc.context;
 
-import org.geektimes.web.user.function.ThrowableAction;
-import org.geektimes.web.user.function.ThrowableFunction;
+import org.geektimes.web.mvc.function.ThrowableAction;
+import org.geektimes.web.mvc.function.ThrowableFunction;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 import javax.naming.*;
 import javax.servlet.ServletContext;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.logging.Logger;
@@ -25,7 +24,7 @@ public class ComponentContext {
 
     private static final String COMPONENT_ENV_CONTEXT_NAME = "java:comp/env";
 
-    private final Map<String, Object> componentsMap = new LinkedHashMap<>();
+    private static final Map<String, Object> componentsMap = new LinkedHashMap<>();
 
     // 注意：
     // 假设一个 Tomcat JVM 进程，三个 Web Apps，会不会相互冲突？（不会）
@@ -179,7 +178,7 @@ public class ComponentContext {
      * @param <C>
      * @return
      */
-    public <C> C getComponent(String name) {
+    public static  <C> C getComponent(String name) {
         return (C) componentsMap.get(name);
     }
 

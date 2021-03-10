@@ -1,6 +1,6 @@
 package org.geektimes.web.user.repository;
 
-import org.geektimes.web.user.context.ComponentContext;
+import org.geektimes.web.mvc.context.ComponentContext;
 import org.geektimes.web.user.domain.User;
 import org.geektimes.web.user.repository.sql.DBConnectionManager;
 
@@ -32,11 +32,8 @@ public class DatabaseUserRepository implements UserRepository {
         resultSetMethodMappings.put(Double.class, "getDouble");
     }
 
+    @Resource(name = "bean/DBConnectionManager")
     private DBConnectionManager dbConnectionManager;
-
-    public DatabaseUserRepository() {
-        this.dbConnectionManager = ComponentContext.getInstance().getComponent("bean/DBConnectionManager");
-    }
 
     private static final Consumer<Throwable> COMMON_EXCEPTION_HANDLER = e -> logger.log(Level.SEVERE, e.getMessage());
 
