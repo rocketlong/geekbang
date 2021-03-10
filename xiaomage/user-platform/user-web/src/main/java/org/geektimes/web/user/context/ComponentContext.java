@@ -136,8 +136,7 @@ public class ComponentContext {
 
     private void processPostConstruct(Object component, Class<?> componentClass) {
         Stream.of(componentClass.getMethods())
-                .filter(method ->
-                        !Modifier.isStatic(method.getModifiers()) &&
+                .filter(method -> !Modifier.isStatic(method.getModifiers()) &&
                         method.getParameterCount() == 0 &&
                         method.isAnnotationPresent(PostConstruct.class)
                 ).forEach(method -> {
@@ -151,23 +150,16 @@ public class ComponentContext {
 
     private void processPreDestroy(Object component, Class<?> componentClass) {
         Stream.of(componentClass.getMethods())
-                .filter(method ->
-                        !Modifier.isStatic(method.getModifiers()) &&
+                .filter(method -> !Modifier.isStatic(method.getModifiers()) &&
                                 method.getParameterCount() == 0 &&
                                 method.isAnnotationPresent(PreDestroy.class)
-                ).forEach(method -> {
-            try {
-                Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                ).forEach(method -> Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                     try {
                         method.invoke(component);
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
-                }));
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        });
+                })));
     }
 
     /**
