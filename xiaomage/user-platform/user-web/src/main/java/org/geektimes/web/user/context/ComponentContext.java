@@ -150,7 +150,24 @@ public class ComponentContext {
     }
 
     private void processPreDestroy(Object component, Class<?> componentClass) {
-        // TODO
+        Stream.of(componentClass.getMethods())
+                .filter(method ->
+                        !Modifier.isStatic(method.getModifiers()) &&
+                                method.getParameterCount() == 0 &&
+                                method.isAnnotationPresent(PreDestroy.class)
+                ).forEach(method -> {
+            try {
+                Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                    try {
+                        method.invoke(component);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }));
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     /**
