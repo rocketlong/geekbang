@@ -118,8 +118,7 @@ public class ComponentContext {
 
     private void injectComponents(Object component, Class<?> componentClass) {
         Stream.of(componentClass.getDeclaredFields())
-                .filter(field ->
-                        !Modifier.isStatic(field.getModifiers()) &&
+                .filter(field -> !Modifier.isStatic(field.getModifiers()) &&
                         field.isAnnotationPresent(Resource.class))
                 .forEach(field -> {
                     Resource resource = field.getAnnotation(Resource.class);
@@ -151,19 +150,20 @@ public class ComponentContext {
     private void processPreDestroy(Object component, Class<?> componentClass) {
         Stream.of(componentClass.getMethods())
                 .filter(method -> !Modifier.isStatic(method.getModifiers()) &&
-                                method.getParameterCount() == 0 &&
-                                method.isAnnotationPresent(PreDestroy.class)
+                        method.getParameterCount() == 0 &&
+                        method.isAnnotationPresent(PreDestroy.class)
                 ).forEach(method -> Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-                    try {
-                        method.invoke(component);
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                })));
+            try {
+                method.invoke(component);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        })));
     }
 
     /**
      * 内部查找
+     *
      * @param name
      * @param <C>
      * @return
@@ -174,6 +174,7 @@ public class ComponentContext {
 
     /**
      * 外部查找
+     *
      * @param name
      * @param <C>
      * @return
@@ -204,7 +205,7 @@ public class ComponentContext {
                 }
             }
             return fullNames;
-            }, false);
+        }, false);
     }
 
     private <R> R executeInContext(Context context, ThrowableFunction<Context, R> function, boolean ignoredException) {
