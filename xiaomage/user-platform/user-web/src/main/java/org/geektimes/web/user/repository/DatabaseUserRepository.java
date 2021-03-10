@@ -1,6 +1,5 @@
 package org.geektimes.web.user.repository;
 
-import org.geektimes.web.mvc.context.ComponentContext;
 import org.geektimes.web.user.domain.User;
 import org.geektimes.web.user.repository.sql.DBConnectionManager;
 
