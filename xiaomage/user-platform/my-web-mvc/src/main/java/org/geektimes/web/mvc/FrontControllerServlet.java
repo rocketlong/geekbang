@@ -63,7 +63,7 @@ public class FrontControllerServlet extends HttpServlet {
                     .forEach(field -> {
                         Resource resource = field.getAnnotation(Resource.class);
                         String resourceName = resource.name();
-                        Object injectObject = ComponentContext.getComponent(resourceName);
+                        Object injectObject = ComponentContext.getInstance().getComponent(resourceName);
                         field.setAccessible(true);
                         try {
                             field.set(controller, injectObject);
