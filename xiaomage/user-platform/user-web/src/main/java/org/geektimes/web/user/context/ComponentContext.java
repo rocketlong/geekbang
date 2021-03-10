@@ -1,16 +1,18 @@
 package org.geektimes.web.user.context;
 
 import org.geektimes.web.user.function.ThrowableAction;
+import org.geektimes.web.user.function.ThrowableFunction;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
+import javax.naming.*;
 import javax.servlet.ServletContext;
-import java.util.NoSuchElementException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
+import java.util.*;
 import java.util.logging.Logger;
+import java.util.stream.Stream;
 
 /**
  * 组件上下文（Web 应用全局使用）
@@ -22,6 +24,8 @@ public class ComponentContext {
     public static final Logger logger = Logger.getLogger(CONTEXT_NAME);
 
     private static final String COMPONENT_ENV_CONTEXT_NAME = "java:comp/env";
+
+    private final Map<String, Object> componentsMap = new LinkedHashMap<>();
 
     // 注意：
     // 假设一个 Tomcat JVM 进程，三个 Web Apps，会不会相互冲突？（不会）
@@ -86,7 +90,10 @@ public class ComponentContext {
      * 实例化组件
      */
     protected void instantiateComponents() {
-
+        // 获取所有组件名称
+        List<String> componentNames = listAllComponentNames();
+        // 通过依赖查找实例化对象（Tomcat BeanFactory setter 方法的执行，仅支持简单类型）
+        componentNames.forEach(name -> componentsMap.put(name, lookupComponent(name)));
     }
 
     /**
@@ -98,17 +105,111 @@ public class ComponentContext {
      * </ol>
      */
     protected void initializeComponents() {
-
+        componentsMap.values().forEach(component -> {
+            Class<?> componentClass = component.getClass();
+            // 注入阶段 - {@link Resource}
+            injectComponents(component, componentClass);
+            // 初始阶段 - {@link PostConstruct}
+            processPostConstruct(component, componentClass);
+            // 销毁阶段 - {@link PreDestroy}
+            processPreDestroy(component, componentClass);
+        });
     }
 
+    private void injectComponents(Object component, Class<?> componentClass) {
+        Stream.of(componentClass.getDeclaredFields())
+                .filter(field ->
+                        !Modifier.isStatic(field.getModifiers()) &&
+                        field.isAnnotationPresent(Resource.class))
+                .forEach(field -> {
+                    Resource resource = field.getAnnotation(Resource.class);
+                    String resourceName = resource.name();
+                    Object injectObject = lookupComponent(resourceName);
+                    field.setAccessible(true);
+                    try {
+                        field.set(component, injectObject);
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    }
+                });
+    }
+
+    private void processPostConstruct(Object component, Class<?> componentClass) {
+        Stream.of(componentClass.getMethods())
+                .filter(method ->
+                        !Modifier.isStatic(method.getModifiers()) &&
+                        method.getParameterCount() == 0 &&
+                        method.isAnnotationPresent(PostConstruct.class)
+                ).forEach(method -> {
+            try {
+                method.invoke(component);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
+    private void processPreDestroy(Object component, Class<?> componentClass) {
+        // TODO
+    }
+
+    /**
+     * 内部查找
+     * @param name
+     * @param <C>
+     * @return
+     */
+    protected <C> C lookupComponent(String name) {
+        return (C) executeInContext(this.context, context -> context.lookup(name), false);
+    }
+
+    /**
+     * 外部查找
+     * @param name
+     * @param <C>
+     * @return
+     */
     public <C> C getComponent(String name) {
-        C component = null;
+        return (C) componentsMap.get(name);
+    }
+
+    private List<String> listAllComponentNames() {
+        return listComponentNames("/");
+    }
+
+    protected List<String> listComponentNames(String name) {
+        return executeInContext(this.context, context -> {
+            NamingEnumeration<NameClassPair> enumeration = executeInContext(context, ctx -> ctx.list(name), true);
+            if (enumeration == null) { // 当前 JNDI 名称下没有子节点
+                return Collections.emptyList();
+            }
+            List<String> fullNames = new LinkedList<>();
+            while (enumeration.hasMoreElements()) {
+                NameClassPair element = enumeration.nextElement();
+                String className = element.getClassName();
+                Class<?> targetClass = classLoader.loadClass(className);
+                if (Context.class.isAssignableFrom(targetClass)) { // 目录 - Context
+                    fullNames.addAll(listComponentNames(element.getName()));
+                } else { // 节点
+                    fullNames.add(name.startsWith("/") ? element.getName() : name + "/" + element.getName());
+                }
+            }
+            return fullNames;
+            }, false);
+    }
+
+    private <R> R executeInContext(Context context, ThrowableFunction<Context, R> function, boolean ignoredException) {
+        R result = null;
         try {
-            component = (C) this.context.lookup(name);
-        } catch (NamingException e) {
-            throw new NoSuchElementException(name);
+            result = function.apply(context);
+        } catch (Throwable e) {
+            if (ignoredException) {
+                logger.warning(e.getMessage());
+            } else {
+                throw new RuntimeException(e);
+            }
         }
-        return component;
+        return result;
     }
 
 }
