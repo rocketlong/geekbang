@@ -2,8 +2,6 @@ package org.geektimes.web.user.controller;
 
 import org.geektimes.web.mvc.controller.PageController;
 import org.geektimes.web.user.domain.User;
-import org.geektimes.web.user.repository.DatabaseUserRepository;
-import org.geektimes.web.user.repository.UserRepository;
 import org.geektimes.web.user.service.UserService;
 
 import javax.annotation.Resource;
@@ -11,9 +9,12 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import java.util.List;
+import java.util.logging.Logger;
 
 @Path("/user")
 public class UserController implements PageController {
+
+    private static final Logger logger = Logger.getLogger(UserController.class.getName());
 
     @Resource(name = "bean/UserServiceImpl")
     private UserService userService;
@@ -22,7 +23,7 @@ public class UserController implements PageController {
     @Path("/getUserById")
     public String getUserById(Long id) {
         User user = userService.getById(id);
-        System.out.println(user);
+        logger.info(user.toString());
         return "success.jsp";
     }
 
@@ -30,7 +31,7 @@ public class UserController implements PageController {
     @Path("/getUserAll")
     public String getUserAll() {
         List<User> users = (List<User>) userService.getAll();
-        System.out.println(users);
+        logger.info(users.toString());
         return "success.jsp";
     }
 
