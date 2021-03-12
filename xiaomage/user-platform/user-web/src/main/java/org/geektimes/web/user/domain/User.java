@@ -1,17 +1,28 @@
 package org.geektimes.web.user.domain;
 
+import javax.persistence.*;
 import java.util.Objects;
 
+import static javax.persistence.GenerationType.AUTO;
+
+@Entity
+@Table(name = "users")
 public class User {
 
+    @Id
+    @GeneratedValue(strategy = AUTO)
     private Long id;
 
+    @Column
     private String name;
 
+    @Column
     private String password;
 
+    @Column
     private String email;
 
+    @Column
     private String phoneNumber;
 
     public Long getId() {
