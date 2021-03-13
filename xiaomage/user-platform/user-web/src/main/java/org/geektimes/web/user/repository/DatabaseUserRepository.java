@@ -5,6 +5,7 @@ import org.geektimes.web.user.repository.orm.jpa.DelegatingEntityManager;
 import org.geektimes.web.user.repository.sql.DBConnectionManager;
 
 import javax.annotation.Resource;
+import javax.persistence.EntityManager;
 import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
@@ -35,8 +36,9 @@ public class DatabaseUserRepository implements UserRepository {
     @Resource(name = "bean/DBConnectionManager")
     private DBConnectionManager dbConnectionManager;
 
+    // JPA
     @Resource(name = "bean/EntityManager")
-    private DelegatingEntityManager delegatingEntityManager;
+    private EntityManager entityManager;
 
     private static final Consumer<Throwable> COMMON_EXCEPTION_HANDLER = e -> logger.log(Level.SEVERE, e.getMessage());
 
@@ -74,7 +76,7 @@ public class DatabaseUserRepository implements UserRepository {
     @Override
     public User getById(Long userId) {
 //        return dbConnectionManager.executeQuery(SELECT_USER_BY_ID_DML_SQL, this::handlerResultSet, COMMON_EXCEPTION_HANDLER, userId);
-        return delegatingEntityManager.find(User.class, userId);
+        return entityManager.find(User.class, userId);
     }
 
     @Override
