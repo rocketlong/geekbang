@@ -25,7 +25,13 @@ public class JavaConfig implements Config {
             Type[] genericInterfaces = converter.getClass().getGenericInterfaces();
             for (Type interfaceType : genericInterfaces) {
                 if (ParameterizedType.class.isAssignableFrom(interfaceType.getClass())) {
-                    converterMap.put(interfaceType.getClass(), converter);
+                    ParameterizedType parameterizedType = (ParameterizedType) interfaceType;
+                    Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
+                    try {
+                        converterMap.put(Class.forName(actualTypeArguments[0].getTypeName()), converter);
+                    } catch (ClassNotFoundException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         });
@@ -34,8 +40,16 @@ public class JavaConfig implements Config {
     @Override
     public <T> T getValue(String propertyName, Class<T> propertyType) {
         String propertyValue = getPropertyValue(propertyName);
-        Converter<T> converter = converterMap.get(propertyType);
-        return converter.convert(propertyValue);
+        if (String.class.isAssignableFrom(propertyType)) {
+            return (T) propertyValue;
+        } else {
+            Converter<T> converter = converterMap.get(propertyType);
+            if (converter != null) {
+                return converter.convert(propertyValue);
+            } else {
+                throw new RuntimeException("没有对应的 Converter : " + propertyType);
+            }
+        }
     }
 
     protected String getPropertyValue(String propertyName) {

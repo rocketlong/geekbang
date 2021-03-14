@@ -1,5 +1,7 @@
 package org.geektimes.web.user.controller;
 
+import org.eclipse.microprofile.config.Config;
+import org.eclipse.microprofile.config.spi.ConfigProviderResolver;
 import org.geektimes.web.mvc.controller.PageController;
 import org.geektimes.web.user.domain.User;
 import org.geektimes.web.user.service.UserService;
@@ -18,6 +20,9 @@ public class UserController implements PageController {
 
     @Resource(name = "bean/UserServiceImpl")
     private UserService userService;
+
+    @Resource(name = "bean/JavaEEConfigProviderResolver")
+    private ConfigProviderResolver configProviderResolver;
 
     @GET
     @Path("/getUserById")
@@ -54,6 +59,14 @@ public class UserController implements PageController {
         if (user == null || !password.equals(user.getPassword())) {
             return "error.jsp";
         }
+        return "success.jsp";
+    }
+
+    @GET
+    @Path("/getConfigPropertyByName")
+    public String getConfigPropertyByName(String name) {
+        Config config = configProviderResolver.getConfig();
+        System.out.println(config.getValue(name, Integer.class));
         return "success.jsp";
     }
 
