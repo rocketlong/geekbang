@@ -15,26 +15,10 @@ public class JavaConfig implements Config {
 
     private final List<ConfigSource> configSources = new LinkedList<>();
 
-    private final Map<Class<?>, Converter> converterMap = new HashMap<>();
-
     public JavaConfig() {
         ClassLoader classLoader = getClass().getClassLoader();
         ServiceLoader.load(ConfigSource.class, classLoader).forEach(configSources::add);
         configSources.sort(Comparator.comparingInt(ConfigSource::getOrdinal).reversed());
-        ServiceLoader.load(Converter.class, classLoader).forEach(converter -> {
-            Type[] genericInterfaces = converter.getClass().getGenericInterfaces();
-            for (Type interfaceType : genericInterfaces) {
-                if (ParameterizedType.class.isAssignableFrom(interfaceType.getClass())) {
-                    ParameterizedType parameterizedType = (ParameterizedType) interfaceType;
-                    Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
-                    try {
-                        converterMap.put(Class.forName(actualTypeArguments[0].getTypeName()), converter);
-                    } catch (ClassNotFoundException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        });
     }
 
     @Override
@@ -43,7 +27,7 @@ public class JavaConfig implements Config {
         if (String.class.isAssignableFrom(propertyType)) {
             return (T) propertyValue;
         } else {
-            Converter<T> converter = converterMap.get(propertyType);
+            Converter<T> converter = (Converter<T>) TypeConverter.getInstance().getConverter(propertyType);
             if (converter != null) {
                 return converter.convert(propertyValue);
             } else {
@@ -87,8 +71,8 @@ public class JavaConfig implements Config {
     }
 
     @Override
-    public <T> Optional getConverter(Class<T> forType) {
-        return Optional.ofNullable(converterMap.get(forType));
+    public <T> Optional<Converter<T>> getConverter(Class<T> forType) {
+        return Optional.ofNullable((Converter<T>) TypeConverter.getInstance().getConverter(forType));
     }
 
     @Override
