@@ -13,7 +13,7 @@ public class TypeConverter {
     private final Map<Class<?>, Converter<?>> converterMap = new HashMap<>();
 
     private TypeConverter() {
-        ClassLoader classLoader = getClass().getClassLoader();
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         ServiceLoader.load(Converter.class, classLoader).forEach(converter -> {
             Type[] genericInterfaces = converter.getClass().getGenericInterfaces();
             for (Type interfaceType : genericInterfaces) {
@@ -30,11 +30,7 @@ public class TypeConverter {
         });
     }
 
-    private static TypeConverter instance = null;
-
-    static {
-        instance = new TypeConverter();
-    }
+    private static final TypeConverter instance = new TypeConverter();
 
     public static TypeConverter getInstance() {
         return instance;
