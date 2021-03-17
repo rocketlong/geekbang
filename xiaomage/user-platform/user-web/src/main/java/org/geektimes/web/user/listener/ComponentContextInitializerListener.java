@@ -1,10 +1,15 @@
 package org.geektimes.web.user.listener;
 
 import org.geektimes.web.mvc.context.ComponentContext;
+import org.geektimes.web.user.domain.User;
+import org.geektimes.web.user.management.UserManager;
 
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+import java.lang.management.ManagementFactory;
 
 public class ComponentContextInitializerListener implements ServletContextListener {
 
@@ -15,12 +20,31 @@ public class ComponentContextInitializerListener implements ServletContextListen
         this.servletContext = sce.getServletContext();
         ComponentContext context = new ComponentContext();
         context.init(servletContext);
+        registerMBean();
     }
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
         ComponentContext context = ComponentContext.getInstance();
         context.destroy();
+    }
+
+    /**
+     * http://localhost:8080/jolokia/list -- 获取列表
+     * http://localhost:8080/jolokia/read/org.geektimes.web.user.management:type=User/Name -- 访问属性
+     * http://localhost:8080/jolokia/write/org.geektimes.web.user.management:type=User/Name/testName -- 修改属性
+     * http://localhost:8080/jolokia/exec/org.geektimes.web.user.management:type=User/toString -- 调用操作方法
+     */
+    private void registerMBean() {
+        try {
+            MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
+            // 为 UserMBean 定义ObjectName
+            ObjectName objectName = new ObjectName("org.geektimes.web.user.management:type=User");
+            // 注册
+            mBeanServer.registerMBean(new UserManager(new User()), objectName);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }
