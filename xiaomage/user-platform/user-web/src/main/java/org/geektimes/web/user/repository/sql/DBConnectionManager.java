@@ -1,7 +1,7 @@
 package org.geektimes.web.user.repository.sql;
 
 import org.apache.commons.lang.ClassUtils;
-import org.geektimes.web.mvc.function.ThrowableFunction;
+import org.geektimes.dependency.function.ThrowableFunction;
 
 import javax.annotation.Resource;
 import javax.sql.DataSource;

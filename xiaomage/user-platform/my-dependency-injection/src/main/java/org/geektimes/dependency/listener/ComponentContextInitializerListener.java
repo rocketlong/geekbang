@@ -1,16 +1,13 @@
-package org.geektimes.web.user.listener;
+package org.geektimes.dependency.listener;
 
-import org.geektimes.web.mvc.context.ComponentContext;
-import org.geektimes.web.user.domain.User;
-import org.geektimes.web.user.management.UserManager;
+import org.geektimes.dependency.context.ComponentContext;
 
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-import java.lang.management.ManagementFactory;
+import javax.servlet.annotation.WebListener;
 
+@WebListener
 public class ComponentContextInitializerListener implements ServletContextListener {
 
     private ServletContext servletContext;
@@ -20,7 +17,7 @@ public class ComponentContextInitializerListener implements ServletContextListen
         this.servletContext = sce.getServletContext();
         ComponentContext context = new ComponentContext();
         context.init(servletContext);
-        registerMBean();
+//        registerMBean();
     }
 
     @Override
@@ -35,16 +32,16 @@ public class ComponentContextInitializerListener implements ServletContextListen
      * http://localhost:8080/jolokia/write/org.geektimes.web.user.management:type=User/Name/testName -- 修改属性
      * http://localhost:8080/jolokia/exec/org.geektimes.web.user.management:type=User/toString -- 调用操作方法
      */
-    private void registerMBean() {
-        try {
-            MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
-            // 为 UserMBean 定义ObjectName
-            ObjectName objectName = new ObjectName("org.geektimes.web.user.management:type=User");
-            // 注册
-            mBeanServer.registerMBean(new UserManager(new User()), objectName);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+//    private void registerMBean() {
+//        try {
+//            MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
+//            // 为 UserMBean 定义ObjectName
+//            ObjectName objectName = new ObjectName("org.geektimes.web.user.management:type=User");
+//            // 注册
+//            mBeanServer.registerMBean(new UserManager(new User()), objectName);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
 
 }

@@ -2,7 +2,6 @@ package org.geektimes.web.user.controller;
 
 import org.eclipse.microprofile.config.Config;
 import org.eclipse.microprofile.config.ConfigProvider;
-import org.eclipse.microprofile.config.spi.ConfigProviderResolver;
 import org.geektimes.web.mvc.controller.PageController;
 import org.geektimes.web.user.domain.User;
 import org.geektimes.web.user.service.UserService;

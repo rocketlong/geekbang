@@ -5,9 +5,9 @@
          http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
          version="2.5">
 
-    <listener>
-        <listener-class>org.geektimes.web.user.listener.ComponentContextInitializerListener</listener-class>
-    </listener>
+<!--    <listener>-->
+<!--        <listener-class>org.geektimes.dependency.listener.ComponentContextInitializerListener</listener-class>-->
+<!--    </listener>-->
 
     <servlet>
         <servlet-name>default</servlet-name>

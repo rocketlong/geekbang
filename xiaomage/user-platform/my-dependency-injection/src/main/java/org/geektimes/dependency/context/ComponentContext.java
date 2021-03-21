@@ -1,7 +1,7 @@
-package org.geektimes.web.mvc.context;
+package org.geektimes.dependency.context;
 
-import org.geektimes.web.mvc.function.ThrowableAction;
-import org.geektimes.web.mvc.function.ThrowableFunction;
+import org.geektimes.dependency.function.ThrowableAction;
+import org.geektimes.dependency.function.ThrowableFunction;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;

@@ -2,11 +2,10 @@ package org.geektimes.web.mvc;
 
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang.StringUtils;
-import org.geektimes.web.mvc.context.ComponentContext;
+import org.geektimes.dependency.context.ComponentContext;
 import org.geektimes.web.mvc.controller.Controller;
 import org.geektimes.web.mvc.controller.PageController;
 import org.geektimes.web.mvc.controller.RestController;
-import sun.misc.IOUtils;
 
 import javax.annotation.Resource;
 import javax.servlet.RequestDispatcher;
