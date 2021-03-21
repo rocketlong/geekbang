@@ -1,4 +1,4 @@
-package org.geektimes.configuration.servlet.listener;
+package org.geektimes.configuration.listener;
 
 import org.eclipse.microprofile.config.Config;
 import org.eclipse.microprofile.config.spi.ConfigBuilder;
