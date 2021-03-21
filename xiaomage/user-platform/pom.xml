@@ -11,6 +11,7 @@
     <modules>
         <module>my-web-mvc</module>
         <module>user-web</module>
+        <module>my-configuration</module>
     </modules>
     <packaging>pom</packaging>
 
@@ -33,6 +34,9 @@
 
         <!-- jolokia -->
         <jolokia.version>1.6.2</jolokia.version>
+
+        <!-- Testing 版本 -->
+        <junit.version>4.13</junit.version>
 
         <!-- Maven Plugins 版本 -->
         <maven.compiler.version>3.8.1</maven.compiler.version>
@@ -104,6 +108,13 @@
                 <groupId>org.jolokia</groupId>
                 <artifactId>jolokia-core</artifactId>
                 <version>${jolokia.version}</version>
+            </dependency>
+            <!-- JUnit -->
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${junit.version}</version>
+                <scope>test</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>

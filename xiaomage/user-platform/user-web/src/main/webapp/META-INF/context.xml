@@ -28,8 +28,4 @@
 			  propertiesLocation="META-INF/jpa-datasource.properties"
 			  factory="org.apache.naming.factory.BeanFactory" />
 
-	<Resource name="bean/JavaEEConfigProviderResolver" auth="Container"
-			  type="org.geektimes.web.user.configuration.microprofile.config.JavaEEConfigProviderResolver"
-			  factory="org.apache.naming.factory.BeanFactory" />
-
 </Context>
