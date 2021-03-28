@@ -45,7 +45,19 @@ public class DefaultConfig implements Config {
 
     @Override
     public ConfigValue getConfigValue(String propertyName) {
-        return null;
+        String propertyValue = null;
+        ConfigSource configSource = null;
+        for (ConfigSource source : configSources) {
+            propertyValue = source.getValue(propertyName);
+            if (propertyValue != null) {
+                configSource = source;
+                break;
+            }
+        }
+        if (propertyValue == null) {
+            return null;
+        }
+        return new DefaultConfigValue(propertyName, propertyValue, null, configSource.getName(), configSource.getOrdinal());
     }
 
     @Override
