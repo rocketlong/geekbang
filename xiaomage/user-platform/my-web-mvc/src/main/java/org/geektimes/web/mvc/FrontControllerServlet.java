@@ -34,8 +34,6 @@ public class FrontControllerServlet extends HttpServlet {
      */
     private final Map<String, HandlerMethodInfo> handleMethodInfoMapping = new HashMap<>();
 
-    public static final String MICROPROFILE_CONFIG = "microprofileConfig";
-
     /**
      * 初始化 Servlet
      *
@@ -45,12 +43,6 @@ public class FrontControllerServlet extends HttpServlet {
     @Override
     public void init(ServletConfig config) throws ServletException {
         initHandlerMethods();
-        initServletConfig(config);
-    }
-
-    private void initServletConfig(ServletConfig config) {
-        ServletContext servletContext = config.getServletContext();
-        servletContext.setAttribute(MICROPROFILE_CONFIG, ConfigProvider.getConfig());
     }
 
     /**

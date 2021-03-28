@@ -2,6 +2,7 @@ package org.geektimes.web.user.controller;
 
 import org.eclipse.microprofile.config.Config;
 import org.eclipse.microprofile.config.ConfigProvider;
+import org.geektimes.configuration.listener.ServletRequestConfigListener;
 import org.geektimes.web.mvc.controller.PageController;
 import org.geektimes.web.user.domain.User;
 import org.geektimes.web.user.service.UserService;
@@ -62,7 +63,11 @@ public class UserController implements PageController {
     @GET
     @Path("/getConfigPropertyByName")
     public String getConfigPropertyByName(String name) {
-        Config config = ConfigProvider.getConfig();
+        // 方式一 直接拿
+//        Config config = ConfigProvider.getConfig();
+
+        // 方式二 每个请求都会将 Config 放入 ThreadLocal
+        Config config = ServletRequestConfigListener.getConfig();
         String value = config.getValue(name, String.class);
         System.out.println(value);
         return "success.jsp";

@@ -10,6 +10,9 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 
+/**
+ * ServletContextListener 容器（servlet）启动时，进行初始化
+ */
 @WebListener
 public class ServletContextConfigInitializer implements ServletContextListener {
 
