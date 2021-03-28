@@ -13,6 +13,7 @@
         <module>user-web</module>
         <module>my-configuration</module>
         <module>my-dependency-injection</module>
+        <module>my-reactive-messaging</module>
     </modules>
     <packaging>pom</packaging>
 
@@ -32,6 +33,8 @@
 
         <!-- MicroProfile 版本-->
         <microprofile-config-api.version>2.0</microprofile-config-api.version>
+        <microprofile-rest-client-api.version>2.0</microprofile-rest-client-api.version>
+        <microprofile-reactive-messaging-api.version>1.0</microprofile-reactive-messaging-api.version>
 
         <!-- jolokia -->
         <jolokia.version>1.6.2</jolokia.version>
@@ -103,6 +106,16 @@
                 <groupId>org.eclipse.microprofile.config</groupId>
                 <artifactId>microprofile-config-api</artifactId>
                 <version>${microprofile-config-api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.microprofile.rest.client</groupId>
+                <artifactId>microprofile-rest-client-api</artifactId>
+                <version>${microprofile-rest-client-api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.microprofile.reactive.messaging</groupId>
+                <artifactId>microprofile-reactive-messaging-api</artifactId>
+                <version>${microprofile-reactive-messaging-api.version}</version>
             </dependency>
             <!-- jolokia -->
             <dependency>
