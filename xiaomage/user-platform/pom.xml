@@ -14,6 +14,7 @@
         <module>my-configuration</module>
         <module>my-dependency-injection</module>
         <module>my-reactive-messaging</module>
+        <module>my-rest-client</module>
     </modules>
     <packaging>pom</packaging>
 
@@ -26,15 +27,19 @@
         <javax.servlet-api.version>3.1.0</javax.servlet-api.version>
         <javax.ws.rs-api.version>2.0.1</javax.ws.rs-api.version>
         <jstl.version>1.2</jstl.version>
-        <commons-lang.version>2.6</commons-lang.version>
-        <derby.version>10.1.3.1</derby.version>
-        <fastjson.version>1.2.75</fastjson.version>
-        <hibernate.version>5.4.29.Final</hibernate.version>
+        <javax.annotation-api.version>1.3.2</javax.annotation-api.version>
 
         <!-- MicroProfile 版本-->
         <microprofile-config-api.version>2.0</microprofile-config-api.version>
         <microprofile-rest-client-api.version>2.0</microprofile-rest-client-api.version>
         <microprofile-reactive-messaging-api.version>1.0</microprofile-reactive-messaging-api.version>
+
+        <!-- 第三方源依赖版本 -->
+        <commons-lang.version>2.6</commons-lang.version>
+        <commons-io.version>2.4</commons-io.version>
+        <fastjson.version>1.2.75</fastjson.version>
+        <derby.version>10.1.3.1</derby.version>
+        <hibernate.version>5.4.29.Final</hibernate.version>
 
         <!-- jolokia -->
         <jolokia.version>1.6.2</jolokia.version>
@@ -53,8 +58,9 @@
         <maven.compiler.target>8</maven.compiler.target>
     </properties>
 
-    <!-- Artifacts 依赖版本管理 -->
+    <!-- 依赖版本管理 -->
     <dependencyManagement>
+
         <dependencies>
             <!-- Servlet 3.1 API -->
             <dependency>
@@ -62,75 +68,105 @@
                 <artifactId>javax.servlet-api</artifactId>
                 <version>${javax.servlet-api.version}</version>
             </dependency>
+
             <!-- JAX-RS API -->
             <dependency>
                 <groupId>javax.ws.rs</groupId>
                 <artifactId>javax.ws.rs-api</artifactId>
                 <version>${javax.ws.rs-api.version}</version>
             </dependency>
+
             <!-- JSTL -->
             <dependency>
                 <groupId>javax.servlet</groupId>
                 <artifactId>jstl</artifactId>
                 <version>${jstl.version}</version>
             </dependency>
+
+            <!-- Java Commons Annotations -->
             <dependency>
-                <groupId>commons-lang</groupId>
-                <artifactId>commons-lang</artifactId>
-                <version>${commons-lang.version}</version>
+                <groupId>javax.annotation</groupId>
+                <artifactId>javax.annotation-api</artifactId>
+                <version>${javax.annotation-api.version}</version>
             </dependency>
+
+            <!-- Java DB -->
             <dependency>
                 <groupId>org.apache.derby</groupId>
                 <artifactId>derby</artifactId>
                 <version>${derby.version}</version>
             </dependency>
+
+            <!-- fastjson -->
             <dependency>
                 <groupId>com.alibaba</groupId>
                 <artifactId>fastjson</artifactId>
                 <version>${fastjson.version}</version>
             </dependency>
+
             <!-- Hibernate ORM Core -->
             <dependency>
                 <groupId>org.hibernate</groupId>
                 <artifactId>hibernate-core</artifactId>
                 <version>${hibernate.version}</version>
             </dependency>
+
             <!-- Hibernate JPA support -->
             <dependency>
                 <groupId>org.hibernate</groupId>
                 <artifactId>hibernate-entitymanager</artifactId>
                 <version>${hibernate.version}</version>
             </dependency>
+
             <!-- MicroProfile -->
             <dependency>
                 <groupId>org.eclipse.microprofile.config</groupId>
                 <artifactId>microprofile-config-api</artifactId>
                 <version>${microprofile-config-api.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>org.eclipse.microprofile.rest.client</groupId>
                 <artifactId>microprofile-rest-client-api</artifactId>
                 <version>${microprofile-rest-client-api.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>org.eclipse.microprofile.reactive.messaging</groupId>
                 <artifactId>microprofile-reactive-messaging-api</artifactId>
                 <version>${microprofile-reactive-messaging-api.version}</version>
             </dependency>
+
             <!-- jolokia -->
             <dependency>
                 <groupId>org.jolokia</groupId>
                 <artifactId>jolokia-core</artifactId>
                 <version>${jolokia.version}</version>
             </dependency>
+
             <!-- JUnit -->
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
                 <version>${junit.version}</version>
-                <scope>test</scope>
             </dependency>
+
+            <!-- Apache Commons Language -->
+            <dependency>
+                <groupId>commons-lang</groupId>
+                <artifactId>commons-lang</artifactId>
+                <version>${commons-lang.version}</version>
+            </dependency>
+
+            <!-- Apache Commons I/O -->
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${commons-io.version}</version>
+            </dependency>
+
         </dependencies>
+
     </dependencyManagement>
 
     <build>
