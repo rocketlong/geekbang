@@ -45,11 +45,11 @@ public class HttpPostInvocation implements Invocation {
         try {
             connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod(HttpMethod.POST);
+            connection.setDoOutput(true);
             setRequestHeaders(connection);
-            int statusCode = connection.getResponseCode();
-            DefaultResponse response = new DefaultResponse(entity);
+            DefaultResponse response = new DefaultResponse();
             response.setConnection(connection);
-            response.setStatus(statusCode);
+            response.setEntity(entity);
             return response;
         } catch (IOException e) {
             // TODO Error handler

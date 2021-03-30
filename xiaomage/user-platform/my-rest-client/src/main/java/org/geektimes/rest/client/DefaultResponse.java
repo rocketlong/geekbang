@@ -41,7 +41,7 @@ public class DefaultResponse extends Response {
 
     private int status;
 
-    private Object entity;
+    private Entity<?> entity;
 
     private Annotation[] annotations;
 
@@ -83,10 +83,6 @@ public class DefaultResponse extends Response {
 
     }
 
-    public DefaultResponse(Entity<?> entity) {
-        this.entity = entity;
-    }
-
     public void setConnection(HttpURLConnection connection) {
         this.connection = connection;
     }
@@ -95,7 +91,7 @@ public class DefaultResponse extends Response {
         this.status = status;
     }
 
-    public void setEntity(Object entity) {
+    public void setEntity(Entity<?> entity) {
         this.entity = entity;
     }
 
@@ -189,15 +185,18 @@ public class DefaultResponse extends Response {
             ObjectMapper objectMapper = new ObjectMapper();
             if (entity != null) {
                 OutputStream outputStream = connection.getOutputStream();
-                IOUtils.write(objectMapper.writeValueAsString(entity), outputStream, encoding);
+                IOUtils.write(objectMapper.writeValueAsString(entity.getEntity()), outputStream, encoding);
             }
-            InputStream inputStream = connection.getInputStream();
-            // 参考 HttpMessageConverter 实现，实现运行时动态判断
-            if (String.class.equals(entityType)) {
-                Object value = IOUtils.toString(inputStream, encoding);
-                result = (T) value;
-            } else {
-                result = objectMapper.readValue(new InputStreamReader(inputStream, encoding), entityType);
+            if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                this.status = HttpURLConnection.HTTP_OK;
+                InputStream inputStream = connection.getInputStream();
+                // 参考 HttpMessageConverter 实现，实现运行时动态判断
+                if (String.class.equals(entityType)) {
+                    Object value = IOUtils.toString(inputStream, encoding);
+                    result = (T) value;
+                } else {
+                    result = objectMapper.readValue(new InputStreamReader(inputStream, encoding), entityType);
+                }
             }
         } catch (IOException e) {
             throw new RuntimeException(e);

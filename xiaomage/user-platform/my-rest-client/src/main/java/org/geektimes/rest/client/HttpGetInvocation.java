@@ -68,23 +68,11 @@ public class HttpGetInvocation implements Invocation {
             connection.setRequestMethod(HttpMethod.GET);
             setRequestHeaders(connection);
             // TODO Set the cookies
-            int statusCode = connection.getResponseCode();
 //            Response.ResponseBuilder responseBuilder = Response.status(statusCode);
-//
 //            responseBuilder.build();
             DefaultResponse response = new DefaultResponse();
             response.setConnection(connection);
-            response.setStatus(statusCode);
             return response;
-//            Response.Status status = Response.Status.fromStatusCode(statusCode);
-//            switch (status) {
-//                case Response.Status.OK:
-//
-//                    break;
-//                default:
-//                    break;
-//            }
-
         } catch (IOException e) {
             // TODO Error handler
         }
