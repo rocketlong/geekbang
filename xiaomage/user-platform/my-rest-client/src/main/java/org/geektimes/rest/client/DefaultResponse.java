@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.IOUtils;
 
 import javax.ws.rs.HttpMethod;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.*;
 import java.io.IOException;
 import java.io.InputStream;
@@ -52,8 +53,6 @@ public class DefaultResponse extends Response {
 
     private MultivaluedMap<String, Object> headers = new MultivaluedHashMap<>();
 
-    private MultivaluedMap<String, Object> body = new MultivaluedHashMap<>();
-
     private Locale locale;
 
     private MediaType mediaType;
@@ -84,8 +83,8 @@ public class DefaultResponse extends Response {
 
     }
 
-    public DefaultResponse(MultivaluedMap<String, Object> body) {
-        this.body = body;
+    public DefaultResponse(Entity<?> entity) {
+        this.entity = entity;
     }
 
     public void setConnection(HttpURLConnection connection) {
@@ -185,27 +184,27 @@ public class DefaultResponse extends Response {
 
     @Override
     public <T> T readEntity(Class<T> entityType) {
-        T entity = null;
+        T result = null;
         try {
             ObjectMapper objectMapper = new ObjectMapper();
-            if (body != null && !body.isEmpty()) {
+            if (entity != null) {
                 OutputStream outputStream = connection.getOutputStream();
-                IOUtils.write(objectMapper.writeValueAsString(body), outputStream, encoding);
+                IOUtils.write(objectMapper.writeValueAsString(entity), outputStream, encoding);
             }
             InputStream inputStream = connection.getInputStream();
             // 参考 HttpMessageConverter 实现，实现运行时动态判断
             if (String.class.equals(entityType)) {
                 Object value = IOUtils.toString(inputStream, encoding);
-                entity = (T) value;
+                result = (T) value;
             } else {
-                entity = objectMapper.readValue(new InputStreamReader(inputStream, encoding), entityType);
+                result = objectMapper.readValue(new InputStreamReader(inputStream, encoding), entityType);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
         } finally {
             connection.disconnect();
         }
-        return entity;
+        return result;
     }
 
     @Override

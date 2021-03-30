@@ -1,6 +1,7 @@
 package org.geektimes.rest.client;
 
 import javax.ws.rs.HttpMethod;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.InvocationCallback;
 import javax.ws.rs.core.GenericType;
@@ -21,16 +22,16 @@ public class HttpPostInvocation implements Invocation {
 
     private final MultivaluedMap<String, Object> headers;
 
-    private final MultivaluedMap<String, Object> body;
+    private final Entity<?> entity;
 
-    public HttpPostInvocation(URI uri, MultivaluedMap<String, Object> headers, MultivaluedMap<String, Object> body) {
+    public HttpPostInvocation(URI uri, MultivaluedMap<String, Object> headers, Entity<?> entity) {
         try {
             this.url = uri.toURL();
         } catch (MalformedURLException e) {
             throw new IllegalArgumentException();
         }
         this.headers = headers;
-        this.body = body;
+        this.entity = entity;
     }
 
     @Override
@@ -46,7 +47,7 @@ public class HttpPostInvocation implements Invocation {
             connection.setRequestMethod(HttpMethod.POST);
             setRequestHeaders(connection);
             int statusCode = connection.getResponseCode();
-            DefaultResponse response = new DefaultResponse(body);
+            DefaultResponse response = new DefaultResponse(entity);
             response.setConnection(connection);
             response.setStatus(statusCode);
             return response;
