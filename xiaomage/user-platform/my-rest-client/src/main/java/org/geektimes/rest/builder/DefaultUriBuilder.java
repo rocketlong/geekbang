@@ -1,4 +1,4 @@
-package org.geektimes.rest.core;
+package org.geektimes.rest.builder;
 
 import org.geektimes.rest.util.PathUtils;
 import org.geektimes.rest.util.URLUtils;
